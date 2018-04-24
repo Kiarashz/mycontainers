@@ -1,0 +1,55 @@
+version: "3.3"
+services:
+  dnssvr:
+    image: mydns
+    build:
+      context: ./dns
+      dockerfile: Dockerfile
+      args:
+        buildno: 1
+    hostname: dnssvr
+    domainname: test.me
+    command: named -f
+    environment:
+      - http_proxy=http://192.168.1.248:3128
+      - https_proxy=http://192.168.1.248:3128
+      - no_proxy=localhost,127.0.0.1
+    networks:
+      - apache_nw
+
+  websvr:
+    image: myapache
+    build:
+      context: ./apache
+      dockerfile: Dockerfile
+      args:
+        buildno: 1
+    hostname: websvr
+    domainname: test.me
+    environment:
+      - http_proxy=http://192.168.1.248:3128
+      - https_proxy=http://192.168.1.248:3128
+      - no_proxy=localhost,127.0.0.1
+    command: /usr/local/apache2/bin/apachectl -d /usr/local/apache2/ -f conf/httpd.conf -e info -DFOREGROUND
+    networks:
+      - apache_nw
+
+  client:
+    image: myubuntu
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        buildno: 1
+    hostname: client
+    domainname: test.me
+    environment:
+      - http_proxy=http://192.168.1.248:3128
+      - https_proxy=http://192.168.1.248:3128
+      - no_proxy=localhost,127.0.0.1
+    command: sleep infinity
+    networks:
+      - apache_nw
+
+networks:
+  apache_nw:
