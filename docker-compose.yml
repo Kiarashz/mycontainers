@@ -14,6 +14,9 @@ services:
       - http_proxy=http://192.168.1.248:3128
       - https_proxy=http://192.168.1.248:3128
       - no_proxy=localhost,127.0.0.1
+    volumes:
+      - ./dns/db.test.me:/etc/bind/db.test.me
+      - ./dns/named.conf.local:/etc/bind/named.conf.local
     networks:
       - apache_nw
 
@@ -30,7 +33,7 @@ services:
       - http_proxy=http://192.168.1.248:3128
       - https_proxy=http://192.168.1.248:3128
       - no_proxy=localhost,127.0.0.1
-    command: /usr/local/apache2/bin/apachectl -d /usr/local/apache2/ -f conf/httpd.conf -e info -DFOREGROUND
+    command: apachectl -DFOREGROUND
     networks:
       - apache_nw
 
