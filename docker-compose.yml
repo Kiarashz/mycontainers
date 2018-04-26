@@ -9,10 +9,6 @@ services:
         buildno: 1
     hostname: websvr
     domainname: test.me
-    environment:
-      - http_proxy=http://192.168.1.248:3128
-      - https_proxy=http://192.168.1.248:3128
-      - no_proxy=localhost,127.0.0.1,websvr,websvr1,websvr2,websvr3
     command: apachectl -DFOREGROUND
     ports:
       - 8080:80
@@ -32,10 +28,6 @@ services:
         buildno: 1
     hostname: client
     domainname: test.me
-    environment:
-      - http_proxy=http://192.168.1.248:3128
-      - https_proxy=http://192.168.1.248:3128
-      - no_proxy=localhost,127.0.0.1,websvr,websvr1,websvr2,websvr3
     command: sleep infinity
     networks:
       - apache_nw

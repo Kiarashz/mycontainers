@@ -1,5 +1,5 @@
 From ubuntu
-ENV http_proxy=http://192.168.1.248:3128 \
-    https_proxy=http://192.168.1.248:3128 \
-    no_proxy=localhost,127.0.0.1
+ENV http_proxy $http_proxy \
+    https_proxy $https_proxy \
+    no_proxy $no_proxy
 Run apt update && apt install -y less vim bind9 dnsutils curl
