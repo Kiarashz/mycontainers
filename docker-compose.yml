@@ -1,25 +1,5 @@
 version: "3.3"
 services:
-  dnssvr:
-    image: mydns
-    build:
-      context: ./dns
-      dockerfile: Dockerfile
-      args:
-        buildno: 1
-    hostname: dnssvr
-    domainname: test.me
-    command: named -f
-    environment:
-      - http_proxy=http://192.168.1.248:3128
-      - https_proxy=http://192.168.1.248:3128
-      - no_proxy=localhost,127.0.0.1
-    volumes:
-      - ./dns/db.test.me:/etc/bind/db.test.me
-      - ./dns/named.conf.local:/etc/bind/named.conf.local
-    networks:
-      - apache_nw
-
   websvr:
     image: myapache
     build:
@@ -32,10 +12,14 @@ services:
     environment:
       - http_proxy=http://192.168.1.248:3128
       - https_proxy=http://192.168.1.248:3128
-      - no_proxy=localhost,127.0.0.1
+      - no_proxy=localhost,127.0.0.1,websvr,websvr1,websvr2,websvr3
     command: apachectl -DFOREGROUND
     networks:
-      - apache_nw
+      apache_nw:
+        aliases:
+            - websvr1
+            - websvr2
+            - websvr3
 
   client:
     image: myubuntu
@@ -49,7 +33,7 @@ services:
     environment:
       - http_proxy=http://192.168.1.248:3128
       - https_proxy=http://192.168.1.248:3128
-      - no_proxy=localhost,127.0.0.1
+      - no_proxy=localhost,127.0.0.1,websvr,websvr1,websvr2,websvr3
     command: sleep infinity
     networks:
       - apache_nw
