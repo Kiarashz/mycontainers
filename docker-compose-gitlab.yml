@@ -1,0 +1,25 @@
+version: "3.3"
+services:
+  gitlab:
+    image: gitlab/gitlab-ce
+    hostname: gitsvr
+    domainname: lab
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - mylabnw
+
+  mysqlsvr:
+    image: mysql
+    hostname: dbsvr
+    domainname: lab
+    environment:
+     - MYSQL_ROOT_PASSWORD=$mydb_password
+    ports:
+     - 3306:3306
+    networks:
+      - mylabnw
+
+networks:
+  mylabnw:
