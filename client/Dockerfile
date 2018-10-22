@@ -1,5 +1,5 @@
-FROM ubuntu
-ENV http_proxy $http_proxy \
-    https_proxy $https_proxy \
-    no_proxy $no_proxy
-RUN apt update && apt install -y less vim dnsutils curl lynx
+FROM centos:7
+# ENV https_proxy <proxy url>
+# ENV http_proxy <proxy url>
+# ENV no_proxy localhost,127.0.0.1
+RUN yum clean all && yum makecache && yum install -y less vim dnsutils curl lynx

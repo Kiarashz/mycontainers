@@ -1,17 +1,16 @@
 version: "3.3"
 services:
   websvr:
-    image: myapache
-    build:
-      context: ./apache
-      dockerfile: Dockerfile
-      args:
-        buildno: 1
+    image: httpd
     hostname: websvr
     domainname: test.me
-    command: apachectl -DFOREGROUND
+    volumes:
+      - ./apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
+      - ./apache/websvr1:/www/websvr1
+      - ./apache/websvr2:/www/websvr2
+      - ./apache/websvr3:/www/websvr3
     ports:
-      - 8080:80
+      - 9090:80
     networks:
       apache_nw:
         aliases:
@@ -20,7 +19,7 @@ services:
             - websvr3
 
   client:
-    image: myubuntu
+    image: mycentos
     build:
       context: ./client
       dockerfile: Dockerfile
