@@ -18,18 +18,57 @@ services:
             - websvr2
             - websvr3
 
-  client:
-    image: mycentos
+  centos7:
+    image: mycentos:7
     build:
-      context: ./client
+      context: ./centos7
       dockerfile: Dockerfile
       args:
         buildno: 1
-    hostname: client
+    hostname: centos7
     domainname: test.me
     command: sleep infinity
     networks:
       - apache_nw
+
+  jdk7:
+    image: jdk7
+    build:
+      context: ./jdk7
+      dockerfile: Dockerfile
+      args:
+        buildno: 1
+    hostname: ./jdk7
+    domainname: test.me
+    command: sleep infinity
+    networks:
+      - apache_nw
+
+  centos6:
+    image: mycentos:6
+    build:
+      context: ./centos6
+      dockerfile: Dockerfile
+      args:
+        buildno: 1
+    hostname: centos6
+    domainname: test.me
+    command: sleep infinity
+    networks:
+    - apache_nw
+
+  jdk6:
+    image: jdk6
+    build:
+      context: ./jdk6
+      dockerfile: Dockerfile
+      args:
+        buildno: 1
+    hostname: jdk6
+    domainname: test.me
+    command: sleep infinity
+    networks:
+    - apache_nw
 
 networks:
   apache_nw:
