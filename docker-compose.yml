@@ -1,74 +1,43 @@
+# Dockerized lab for Apache and Nginx learning
+
 version: "3.3"
+
 services:
-  websvr:
+  apache:
     image: httpd
-    hostname: websvr
-    domainname: test.me
+    hostname: apache
+    container_name: apache
+    volumes:
+      - ./apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
+      - ./apache/apache1:/www/apache1
+      - ./apache/apache2:/www/apache2
+      - ./apache/apache3:/www/apache3
+    ports:
+      - 8080:80
+    networks:
+      webservers:
+        aliases:
+            - apache1
+            - apache2
+            - apache3
+
+  nginx:
+    image: nginx
+    hostname: nginx
+    container_name: nginx
     volumes:
       - ./apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
       - ./apache/websvr1:/www/websvr1
       - ./apache/websvr2:/www/websvr2
       - ./apache/websvr3:/www/websvr3
     ports:
-      - 9090:80
+      - 80:80
     networks:
-      apache_nw:
+      webservers:
         aliases:
-            - websvr1
-            - websvr2
-            - websvr3
-
-  centos7:
-    image: mycentos:7
-    build:
-      context: ./centos7
-      dockerfile: Dockerfile
-      args:
-        buildno: 1
-    hostname: centos7
-    domainname: test.me
-    command: sleep infinity
-    networks:
-      - apache_nw
-
-  jdk7:
-    image: jdk7
-    build:
-      context: ./jdk7
-      dockerfile: Dockerfile
-      args:
-        buildno: 1
-    hostname: ./jdk7
-    domainname: test.me
-    command: sleep infinity
-    networks:
-      - apache_nw
-
-  centos6:
-    image: mycentos:6
-    build:
-      context: ./centos6
-      dockerfile: Dockerfile
-      args:
-        buildno: 1
-    hostname: centos6
-    domainname: test.me
-    command: sleep infinity
-    networks:
-    - apache_nw
-
-  jdk6:
-    image: jdk6
-    build:
-      context: ./jdk6
-      dockerfile: Dockerfile
-      args:
-        buildno: 1
-    hostname: jdk6
-    domainname: test.me
-    command: sleep infinity
-    networks:
-    - apache_nw
+          - nginx1
+          - nginx2
+          - nginx3
 
 networks:
-  apache_nw:
+  webservers:
