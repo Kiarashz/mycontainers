@@ -3,23 +3,32 @@
 version: "3.3"
 
 services:
-  apache:
+  apache2:
     image: httpd
-    hostname: apache
-    container_name: apache
+    hostname: apache2
+    container_name: apache2
     volumes:
-      - ./apache/httpd.conf:/usr/local/apache2/conf/httpd.conf
-      - ./apache/apache1:/www/apache1
+      - ./apache/httpd2.conf:/usr/local/apache2/conf/httpd.conf
       - ./apache/apache2:/www/apache2
-      - ./apache/apache3:/www/apache3
+    networks:
+      - webservers
+
+  apache1:
+    image: httpd
+    hostname: apache1
+    container_name: apache1
+    volumes:
+      - ./apache/httpd1.conf:/usr/local/apache2/conf/httpd.conf
+      - ./apache/apache1:/www/apache1
+      - ./apache/apache12:/www/apache12
+      - ./apache/apache13:/www/apache13
     ports:
       - 8080:80
     networks:
       webservers:
         aliases:
-            - apache1
-            - apache2
-            - apache3
+            - apache12
+            - apache13
 
   nginx:
     image: nginx
