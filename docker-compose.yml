@@ -44,7 +44,11 @@ services:
           - nginx3
 
   client:
-    image: centos
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+      args:
+        buildno: 1
     hostname: client
     container_name: client
     command: sleep infinity
