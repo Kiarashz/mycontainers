@@ -1,0 +1,44 @@
+version: "3.3"
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.2.4
+    hostname: elasticsearch
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      discovery.type: single-node
+    networks:
+      - logery
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:6.2.4
+    hostname: kibana
+    environment:
+      SERVER_NAME: kibana
+      ELASTICSEARCH_URL: http://elasticsearch:9200
+    ports:
+      - 5601:5601
+    networks:
+      - logery
+
+  filebeat:
+    image: docker.elastic.co/beats/filebeat:6.2.4
+    command: filebeat -strict.perms=false -e
+    hostname: filebeat
+    volumes:
+      - $PWD/filebeat.yml:/usr/share/filebeat/filebeat.yml
+      - /host_synced/oars/logs/httpd:/var/log/httpd
+    networks:
+      - logery
+
+#  grafana:
+#    image: grafana/grafana
+#    hostname: grafana
+#    ports:
+#      - 3000:3000
+#    networks:
+#      - logery
+
+networks:
+  logery:

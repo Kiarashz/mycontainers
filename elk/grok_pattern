@@ -1,0 +1,72 @@
+# Helpful links:
+# https://www.elastic.co/guide/en/kibana/6.2/xpack-grokdebugger.html
+# https://github.com/kkos/oniguruma/blob/master/doc/RE
+# https://github.com/logstash-plugins/logstash-patterns-core/blob/master/patterns/grok-patterns
+# https://github.com/elastic/kibana/pull/11632
+# https://github.com/elastic/kibana/pull/10858#issuecomment-327802510
+
+input:
+192.168.56.1 local-delivery - [23/Apr/2018:07:12:49 +0000] 1728762 "GET / HTTP/1.1" 200 994 "-" "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:59.0) Gecko/20100101 Firefox/59.0"
+
+pattern:
+{
+  "description" : "Ingest pipeline for Combined Log Format",
+  "processors" : [
+    {
+      "grok": {
+        "field": "message",
+        "patterns": [
+        "%{IPORHOST:clientip} %{HOSTNAME:vhost} %{USER:auth} \\[%{HTTPDATE:req_time}\\] %{NUMBER:serv_time:int} \"(?:%{WORD:verb} %{NOTSPACE:request}(?: HTTP/%{NUMBER:httpversion})?|%{DATA:rawrequest})\" %{NUMBER:status:int} (?:%{NUMBER:bytes}|-) %{QS:referrer} %{QS:agent}"]
+      }
+    },
+    {
+      "date": {
+        "field": "req_time",
+        "formats": [ "dd/MMM/YYYY:HH:mm:ss Z" ]
+      }
+    },
+    {
+      "geoip": {
+        "field": "clientip"
+      }
+    },
+    {
+      "user_agent": {
+        "field": "agent"
+      }
+    }
+  ]
+}
+
+output:
+{
+  "request": "/",
+  "agent": "\"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:59.0) Gecko/20100101 Firefox/59.0\"",
+  "auth": "-",
+  "verb": "GET",
+  "req_time": "23/Apr/2018:07:12:49 +0000",
+  "vhost": "local-delivery",
+  "serv_time": "1728762",
+  "referrer": "\"-\"",
+  "bytes": "994",
+  "client": "192.168.56.1",
+  "httpversion": "1.1",
+  "status": "200"
+}
+
+---------------------------------------------
+input:
+192.168.56.1 local-delivery - [23/Apr/2018:07:12:49 +0000] 1728762
+
+pattern:
+%{IP:client} %{HOSTNAME:vhost} - \[%{HTTPDATE:qtime}\] %{NUMBER:rtime}
+
+output:
+
+{
+  "qtime": "23/Apr/2018:07:12:49 +0000",
+  "vhost": "local-delivery",
+  "rtime": "1728762",
+  "client": "192.168.56.1"
+}
+

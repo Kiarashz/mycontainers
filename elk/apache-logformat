@@ -1,0 +1,4 @@
+    LogFormat "%h %l %u %t \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combined
+    LogFormat "%h %l %u %t \"%r\" %>s %b" common
+    LogFormat "%h %V %u %t %D \"%r\" %>s %b \"%{Referer}i\" \"%{User-Agent}i\"" combinedVhost
+    LogFormat "%h %V %u %t %D \"%r\" %>s %b" commonVhost

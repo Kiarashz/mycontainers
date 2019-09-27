@@ -1,0 +1,28 @@
+{
+  "description" : "Ingest pipeline for Combined Log Format",
+  "processors" : [
+    {
+      "grok": {
+        "field": "message",
+        "patterns": [
+        "%{IPORHOST:clientip} %{HOSTNAME:vhost} %{USER:auth} \\[%{HTTPDATE:req_time}\\] %{NUMBER:serv_time:int} \"(?:%{WORD:verb} %{NOTSPACE:request}(?: HTTP/%{NUMBER:httpversion})?|%{DATA:rawrequest})\" %{NUMBER:status:int} (?:%{NUMBER:bytes}|-) %{QS:referrer} %{QS:agent}"]
+      }
+    },
+    {
+      "date": {
+        "field": "req_time",
+        "formats": [ "dd/MMM/YYYY:HH:mm:ss Z" ]
+      }
+    },
+    {
+      "geoip": {
+        "field": "clientip"
+      }
+    },
+    {
+      "user_agent": {
+        "field": "agent"
+      }
+    }
+  ]
+}

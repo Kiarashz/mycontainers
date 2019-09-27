@@ -1,0 +1,113 @@
+GET _search
+{ "query": {
+  "match_all": {}
+}
+}
+
+GET _cat/indices
+DELETE filebeat-6.2.4-2018.05.02
+
+GET filebeat-6.2.4-2018.05.02/_count
+
+GET filebeat-6.2.4-2018.05.02/_search
+
+PUT test/car/123
+{ "name": "purche",
+  "made": 2000
+}
+
+PUT oars/apache/1
+{
+  "remote": "192.168.56.1",
+  "vhost": "local-schools",
+  "user": "-",
+  "rtime": "[02/May/2018:04:53:09 +0000]",
+  "res_time": 11443,
+  "request": "GET /images/backgrounds/bg_close.png HTTP/1.1",
+  "res_code": 200,
+  "req_size": 610,
+  "referrer": "http://local-schools/css/legacy/main.css?20180413104734",
+  "user_agent": "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:59.0) Gecko/20100101 Firefox/59.0"
+}
+
+GET oars/apache/_search
+
+GET oars/apache/1/_source
+
+PUT oars
+{
+  "mappings": {
+    "apache": {
+      "properties": {
+        "rtime": {
+          "type":   "date",
+          "format": "[dd/MMMM/yyyy:HH:mm:ss +0000]"
+        },
+        "remote": {
+          "type":   "ip"
+        }
+      }
+    }
+  }
+}
+
+DELETE oars
+
+GET _ingest/pipeline
+
+PUT _ingest/pipeline/vhost
+{
+  "description" : "Ingest pipeline for Combined Log Format",
+  "processors" : [
+    {
+      "grok": {
+        "field": "message",
+        "patterns": [
+        "%{IPORHOST:clientip} %{HOSTNAME:vhost} %{USER:auth} \\[%{HTTPDATE:req_time}\\] %{NUMBER:serv_time} \"(?:%{WORD:verb} %{NOTSPACE:request}(?: HTTP/%{NUMBER:httpversion})?|%{DATA:rawrequest})\" %{NUMBER:status:int} (?:%{NUMBER:bytes}|-) %{QS:referrer} %{QS:agent}"]
+      }
+    },
+    {
+      "date": {
+        "field": "req_time",
+        "formats": [ "dd/MMM/YYYY:HH:mm:ss Z" ]
+      }
+    },
+    {
+      "geoip": {
+        "field": "clientip"
+      }
+    },
+    {
+      "user_agent": {
+        "field": "agent"
+      }
+    }
+  ]
+}
+
+GET _ingest/pipeline/vhost
+
+PUT _ingest/pipeline/vhost
+{
+  "description" : "Ingest pipeline for Combined Log Format",
+  "processors" : [
+    {
+      "grok": {
+        "field": "message",
+        "patterns": [
+        "%{IPORHOST:clientip} %{HOSTNAME:vhost} %{USER:auth} \\[%{HTTPDATE:req_time}\\] %{NUMBER:serv_time} \"(?:%{WORD:verb} %{NOTSPACE:request}(?: HTTP/%{NUMBER:httpversion})?|%{DATA:rawrequest})\" %{NUMBER:status:int} (?:%{NUMBER:bytes}|-) %{QS:referrer} %{QS:agent}"]
+      }
+    }
+  ]
+}
+
+POST _ingest/pipeline/vhost/_simulate
+{
+  "docs": [
+    {
+      "_source": {
+        "message": "192.168.56.1 local-delivery - [23/Apr/2018:07:12:49 +0000] 1728762 \"GET / HTTP/1.1\" 200 994 \"-\" \"Mozilla/5.0 (Windows NT 6.1; WOW64; rv:59.0) Gecko/20100101 Firefox/59.0\""
+      }
+    }
+  ]
+}

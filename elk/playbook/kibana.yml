@@ -1,0 +1,37 @@
+---
+- hosts: localhost
+  vars:
+    - shared_folder: /host_synced
+    - kibana_json: "{{ stacks_home }}/{{ project_name }}/conf/filebeat.dashboard.json"
+  tasks:
+    - name: "check kibana is up"
+      uri:
+        url: "http://localhost:5601"
+      register: result
+      until: result.status == 200
+      retries: 5
+      delay: 10
+
+#    - name: "Create index pattern"
+#      uri:
+#        url: "http://localhost:5601/api/saved_objects/index-pattern"
+#        method: POST
+#        return_content: yes
+#        body_format: json
+#        headers:
+#          Content-Type: "application/json"
+#          kbn-xsrf: "true"
+#        body: '{ "attributes": { "title": "filebeat-6.2.4-*" } }'
+#      when: result.status == 200
+
+    - name: "Setup Kibana dashboard"
+      uri:
+        url: "http://localhost:5601/api/kibana/dashboards/import"
+        method: POST
+        return_content: yes
+        body_format: json
+        body: "{{ lookup('file',kibana_json) }}"
+        headers:
+          Content-Type: "application/json"
+          kbn-xsrf: "true"
+      when: result.status == 200

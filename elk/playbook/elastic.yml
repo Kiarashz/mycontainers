@@ -1,0 +1,24 @@
+---
+- hosts: localhost
+  vars:
+    - shared_folder: /host_synced
+    - elastic_json: "{{ stacks_home }}/{{ project_name }}/conf/ingest_pipline_setup.json"
+  tasks:
+    - name: "check elastic search is up"
+      uri:
+        url: "http://localhost:9200"
+      register: result
+      until: result.status == 200
+      retries: 5
+      delay: 10
+
+    - name: "update ingest node for apache log"
+      uri:
+        url: "http://localhost:9200/_ingest/pipeline/vhost"
+        method: PUT
+        return_content: yes
+        body_format: json
+        body: "{{ lookup('file',elastic_json) }}"
+        headers:
+          Content-Type: "application/json"
+      when: result.status == 200
