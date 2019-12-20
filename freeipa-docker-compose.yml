@@ -1,0 +1,38 @@
+
+version: "3.3"
+
+services:
+  ipa:
+    image: myipa
+    build:
+      context: ./ipa
+      dockerfile: Dockerfile-ipa
+      args:
+        buildno: 1
+    hostname: ipa
+    domainname: example.test
+    container_name: ipa
+    command: sleep infinity
+    environment:
+      TZ: Australia/Melbourne
+    volumes:
+        - ipadata:/data
+    networks:
+      - kbtest
+
+  centos:
+    image: centos:7
+    hostname: client
+    domainname: example.test
+    container_name: centos
+    command: sleep infinity
+    environment:
+       TZ: Australia/Melbourne
+    networks:
+      - kbtest
+
+networks:
+  kbtest:
+
+volumes:
+  ipadata:  
