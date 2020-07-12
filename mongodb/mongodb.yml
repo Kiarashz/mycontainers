@@ -1,0 +1,63 @@
+version: "3.8"
+services:
+  mongo1:
+    image: mongo:4.2
+    hostname: mongo1
+    domainname: lab
+    container_name: mongo1
+    command: --replSet repl0a 
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: root
+    #   MONGO_INITDB_ROOT_PASSWORD: changeme
+    ports:
+      - 27017:27017
+    volumes:
+      - type: volume
+        source: db1
+        target: /data/db
+    networks:
+      - mylabnw
+
+  mongo2:
+    image: mongo:4.2
+    hostname: mongo2
+    domainname: lab
+    container_name: mongo2
+    command: --replSet repl0a 
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: root
+    #   MONGO_INITDB_ROOT_PASSWORD: changeme
+    ports:
+      - 27018:27017
+    volumes:
+      - type: volume
+        source: db2
+        target: /data/db
+    networks:
+      - mylabnw
+
+  mongo3:
+    image: mongo:4.2
+    hostname: mongo3
+    domainname: lab
+    container_name: mongo3
+    command: --replSet repl0a 
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: root
+    #   MONGO_INITDB_ROOT_PASSWORD: changeme
+    ports:
+      - 27019:27017
+    volumes:
+      - type: volume
+        source: db3
+        target: /data/db
+    networks:
+      - mylabnw
+
+networks:
+  mylabnw:
+
+volumes:
+  db1:
+  db2:
+  db3:
